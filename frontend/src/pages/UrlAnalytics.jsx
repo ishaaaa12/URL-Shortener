@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import {
   PieChart,
   Pie,
   Tooltip,
-  Cell,
   ResponsiveContainer,
   LineChart,
   Line,
@@ -23,11 +22,7 @@ function UrlAnalytics() {
   const [referrers, setReferrers] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
 
-  useEffect(() => {
-    loadAnalytics();
-  }, []);
-
-  async function loadAnalytics() {
+  const loadAnalytics = useCallback(async () => {
     const res = await api.get(`/analytics/${shortId}`);
     const dailyRes = await api.get(`/analytics/${shortId}/daily`);
     const referrerRes = await api.get(`/analytics/${shortId}/referrers`);
@@ -37,7 +32,11 @@ function UrlAnalytics() {
     setRecentActivity(recentRes.data);
     setDaily(dailyRes.data);
     setAnalytics(res.data);
-  }
+  }, [shortId]);
+
+  useEffect(() => {
+    loadAnalytics();
+  }, [loadAnalytics]);
 
   if (!analytics) return <h2>Loading...</h2>;
 

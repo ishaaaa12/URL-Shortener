@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useCallback } from "react";
 import api from "../services/api";
 
 import StatsCard from "../components/StatsCard";
@@ -15,29 +14,28 @@ function Dashboard() {
   const [topUrls, setTopUrls] = useState([]);
   const [sort, setSort] = useState("newest");
 
-  useEffect(() => {
-    loadData();
-  }, [page, search, sort]);
-
-  async function loadData() {
+  const loadData = useCallback(async () => {
     try {
       const overviewRes = await api.get("/dashboard/overview");
+
       const urlsRes = await api.get(
         `/dashboard/urls?page=${page}&search=${search}&sort=${sort}`,
       );
+
       const topUrlsRes = await api.get("/dashboard/top-urls");
 
       setTopUrls(topUrlsRes.data);
       setOverview(overviewRes.data);
       setUrls(urlsRes.data.urls);
       setTotalPages(urlsRes.data.totalPages);
-
-      console.log("urls response:", urlsRes.data);
-      console.log("urls array:", urlsRes.data.urls);
     } catch (err) {
       console.error(err);
     }
-  }
+  }, [page, search, sort]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   if (!overview) return <h2>Loading...</h2>;
 
