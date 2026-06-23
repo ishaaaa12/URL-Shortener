@@ -54,5 +54,5 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Verify Backend
-        run: npm run start -- --help || true
+      - name: Check Server Syntax
+        run: node --check server.js
