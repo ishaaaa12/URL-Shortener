@@ -5,6 +5,7 @@ import urlRoutes from "./routes/url.js";
 import healthRoutes from "./routes/health.js";
 import "./jobs/syncClicks.js";
 import metricsRoutes from "./routes/metrics.js";
+import prometheusRoutes from "./routes/prometheus.js";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 
 app.use("/health", healthRoutes);
 app.use("/metrics", metricsRoutes);
+app.use("/metrics/prometheus", prometheusRoutes);
 app.use("/", urlRoutes);
 
 export default app;

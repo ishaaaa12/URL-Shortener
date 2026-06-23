@@ -1,6 +1,6 @@
 import redisClient from "../config/redis.js";
 import logger from '../utils/logger.js'
-
+import {rateLimitCounter} from '../utils/customMetrics.js'
 
 export default function rateLimiter(limit = 10, windowSeconds = 60) {
   return async (req, res, next) => {
@@ -19,6 +19,8 @@ export default function rateLimiter(limit = 10, windowSeconds = 60) {
       }
 
       if (requests > limit) {
+        rateLimitCounter.inc();
+
         logger.warn({
           event: "rate_limit",
           ip,

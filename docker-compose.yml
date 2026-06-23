@@ -17,6 +17,9 @@ services:
       - "5000:5000"
     env_file:
       - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
     depends_on:
       - redis
     restart: unless-stopped
@@ -27,9 +30,25 @@ services:
     container_name: url-shortener-frontend
     ports:
       - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - backend
     restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+
+    ports:
+      - "9090:9090"
+
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+    depends_on:
+      - backend
 
 volumes:
   redis_data:

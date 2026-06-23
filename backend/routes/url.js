@@ -6,6 +6,7 @@ import ClickEvent from "../models/ClickEvent.js";
 import { trackClick } from "../utils/trackClick.js";
 import rateLimiter from "../middleware/rateLimiter.js";
 import logger from '../utils/logger.js'
+import {urlCreatedCounter, redirectCounter, cacheHitCounter, cacheMissCounter} from '../utils/customMetrics.js'
 
 const router = express.Router();
 
@@ -46,6 +47,8 @@ router.post("/shorten", rateLimiter(10, 60), async (req, res) => {
         EX: 86400,
       },
     );
+
+    urlCreatedCounter.inc();
 
     logger.info({
       event: "url_created",
@@ -361,7 +364,11 @@ router.get("/:shortId", async (req, res) => {
 
       await redisClient.incr(`clicks:${shortId}`);
 
+      cacheHitCounter.inc();
+
       await trackClick(req, shortId);
+
+      redirectCounter.inc();
 
       logger.info({
         event: "url_redirect",
@@ -372,6 +379,8 @@ router.get("/:shortId", async (req, res) => {
     }
 
     await redisClient.incr("metrics:cache:misses");
+
+    cacheMissCounter.inc();
 
     const url = await Url.findOne({ shortId });
 
@@ -393,6 +402,8 @@ router.get("/:shortId", async (req, res) => {
     );
 
     await trackClick(req, shortId);
+
+    redirectCounter.inc();
 
     logger.info({
       event: "url_redirect",
