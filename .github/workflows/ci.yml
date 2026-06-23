@@ -64,6 +64,11 @@ jobs:
         run: node tests/redis.test.js
         env:
           REDIS_URL: redis://localhost:6379
+      
+      - name: Health Endpoint Test
+        run: node tests/health.test.js
+        env:
+          REDIS_URL: redis://localhost:6379
 
       - name: Check Server Syntax
         run: node --check server.js
