@@ -50,5 +50,22 @@ services:
     depends_on:
       - backend
 
+  grafana:
+    image: grafana/grafana
+
+    container_name: grafana
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - prometheus
+
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+    restart: unless-stopped
+    
 volumes:
   redis_data:
+  grafana_data:
