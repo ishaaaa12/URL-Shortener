@@ -72,3 +72,19 @@ jobs:
 
       - name: Check Server Syntax
         run: node --check server.js
+
+  docker:
+    needs:
+      - frontend
+      - backend
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Backend
+        run: docker build -t backend ./backend
+
+      - name: Build Frontend
+        run: docker build -t frontend ./frontend
